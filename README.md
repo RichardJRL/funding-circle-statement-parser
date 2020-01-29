@@ -50,7 +50,8 @@ If the file has been renamed and no longer has this format, the program will pro
 ## Sample Output
 `--summary` style of output (requires a wide screen or viewing in a spreadsheet program):
 
-```~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ January 2020 Statement ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -77,9 +78,10 @@ WARNING: Statement may not contain all transactions for the whole calendar month
 ```
 `--csv` style of output:
 
-```    Date, Interest repayment, Early interest repayment, Principal repayment, Early principal repayment, Principal recovery repayment, New loans made,  Fees, Deposits, Withdrawals, Principal Credit, Interest Credit, Principal Debit, Interest Debit
+```
+    Date, Interest repayment, Early interest repayment, Principal repayment, Early principal repayment, Principal recovery repayment, New loans made,  Fees, Deposits, Withdrawals, Principal Credit, Interest Credit, Principal Debit, Interest Debit
  2019-10,              40.29,                     0.46,              134.63,                     48.07,                         0.37,           0.00, -4.53,     0.00,    -3625.00,          3009.57,            9.80,            0.00,           0.00
  2019-11,              15.79,                     0.23,               73.51,                     26.51,                         0.31,           0.00, -1.87,     0.00,     -125.00,             0.00,            0.00,            0.00,           0.00
  2019-12,              14.35,                     0.03,               71.98,                     10.00,                         0.31,           0.00, -1.67,     0.00,     -135.00,             0.00,            0.00,            0.00,           0.00
- Totals ,              70.43,                     0.72,              280.12,                     84.58,                         0.99,           0.00, -8.07,     0.00,    -3885.00,          3009.57,            9.80,            0.00,           0.00```
-
+ Totals ,              70.43,                     0.72,              280.12,                     84.58,                         0.99,           0.00, -8.07,     0.00,    -3885.00,          3009.57,            9.80,            0.00,           0.00
+ ```
