@@ -85,3 +85,5 @@ WARNING: Statement may not contain all transactions for the whole calendar month
  2019-12,              14.35,                     0.03,               71.98,                     10.00,                         0.31,           0.00, -1.67,     0.00,     -135.00,             0.00,            0.00,            0.00,           0.00
  Totals ,              70.43,                     0.72,              280.12,                     84.58,                         0.99,           0.00, -8.07,     0.00,    -3885.00,          3009.57,            9.80,            0.00,           0.00
  ```
+## Compatibility
+The program has been tested with perl 5, version 30, subversion 1 (v5.30.1) built for x86_64-linux-thread-multi on OpenSuSE Tumbleweed
