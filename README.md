@@ -28,16 +28,16 @@ The following transaction categories are summarised by the program:
 - **Net interest:** Derived using the same calculation that Funding Circle use to display "INTEREST" displayed on their website's Summary page: This is 'Net Interest'  = 'Interest repayment' + 'Early interest repayment' + 'Interest Credit' - 'Interest Debit'
 ## Command Line Arguments
 Either or both of the output format specifiers are required
-- `-- csv`
-- `-- summary`
+- `-- csv` for a spreadsheet-compatible table
+- `-- summary` for a 'pretty' human readable table
 
 AND one or more Funding Circle monthly transaction statement csv files with the filename unchanged from it's original format of 'statement_2020-01_2020-02-01_12-34-56.csv'.
 
-Either paths to individual files can be provided, shell globbing can be taken advantage of to select multiple files, or the path of a directory containing one or more statement files can be given.
+Either paths to individual files can be provided, or shell globbing can be taken advantage of to select multiple files on a single path, or the path of a directory containing one or more statement files can be given.
 
 Program output is sent to STDOUT, to save to a file use the redirection operator > or >> followed by your chosen filename. Alternatively pipe the program output to the `tee` utility.
 ## Funding Circle Statement File Format
-The name of the file is composed of statement_[STATEMENTDATE]_[DOWNLOADDATE]_[DOWNLOADTIME].csv where
+The name of the file is composed of statement\_[STATEMENTDATE]\_[DOWNLOADDATE]\_[DOWNLOADTIME].csv where
 - STATEMENTDATE is given as YYYY-MM
 - DOWNLOADDATE is given as YYYY-MM-DD
 - DOWNLOADTIME iis given as hh-mm-ss
@@ -50,7 +50,7 @@ If the file has been renamed and no longer has this format, the program will pro
 ## Sample Output
 `--summary` style of output (requires a wide screen or viewing in a spreadsheet program):
 
-`~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ January 2020 Statement ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -74,12 +74,12 @@ WARNING: Statement may not contain all transactions for the whole calendar month
         Principal Debit               £   0.00 from   0 transactions
         Interest Debit                £   0.00 from   0 transactions
 
-`
+```
 `--csv` style of output:
 
-`    Date, Interest repayment, Early interest repayment, Principal repayment, Early principal repayment, Principal recovery repayment, New loans made,  Fees, Deposits, Withdrawals, Principal Credit, Interest Credit, Principal Debit, Interest Debit
+```    Date, Interest repayment, Early interest repayment, Principal repayment, Early principal repayment, Principal recovery repayment, New loans made,  Fees, Deposits, Withdrawals, Principal Credit, Interest Credit, Principal Debit, Interest Debit
  2019-10,              40.29,                     0.46,              134.63,                     48.07,                         0.37,           0.00, -4.53,     0.00,    -3625.00,          3009.57,            9.80,            0.00,           0.00
  2019-11,              15.79,                     0.23,               73.51,                     26.51,                         0.31,           0.00, -1.87,     0.00,     -125.00,             0.00,            0.00,            0.00,           0.00
  2019-12,              14.35,                     0.03,               71.98,                     10.00,                         0.31,           0.00, -1.67,     0.00,     -135.00,             0.00,            0.00,            0.00,           0.00
- Totals ,              70.43,                     0.72,              280.12,                     84.58,                         0.99,           0.00, -8.07,     0.00,    -3885.00,          3009.57,            9.80,            0.00,           0.00`
+ Totals ,              70.43,                     0.72,              280.12,                     84.58,                         0.99,           0.00, -8.07,     0.00,    -3885.00,          3009.57,            9.80,            0.00,           0.00```
 
