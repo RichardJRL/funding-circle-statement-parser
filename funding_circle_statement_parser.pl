@@ -147,8 +147,8 @@ sub createStatementDataStructure {
         # Net interest is calculated in the same way as "INTEREST" on the Funding Circle website's Summary page:
         # Net interest = Interest repayment + Early interest repayment + Interest credit - Interest debit
         # N.B: This is solely a derived figure and a 'Net interest' transaction category will never appear in a statement
-        'Net interest' => {
-            searchString => 'XXX-Net-Interest-XXX',     # As this is a derived category, its regexp should NEVER match a transaction category when parsing a statement!
+        'Net interest (derived)' => {
+            searchString => 'XXX-Net-interest-XXX',     # As this is a derived category, its regexp should NEVER match a transaction category when parsing a statement!
             column => 2,
             index => 15,
             visible => 1,
@@ -322,9 +322,9 @@ sub parseFile {
             }
             # handle any unexpected lines
             if($matchFound == 0) {
-                print("ERROR: Parsed a line containing unexpected content: $statementData->{STATEMENTFILENAME}\n");
-                print("ERROR: Parsed a line containing unexpected content: $line\n");
-                print("       Please report the unexpected transaction category\n");
+                print("ERROR: Parsed a line containing an unexpected transaction category in the file: $statementData->{STATEMENTFILENAME}\n");
+                print("ERROR: The unexpected line is: $line\n");
+                print("       Please report the the contents of the line to richardjrl+funding-circle-statement-parser\@posteo.net\n");
                 print("       to have it included in future versions of the program.\n")
             }
         }
