@@ -28,8 +28,11 @@ The following transaction categories are summarised by the program:
 - **Net interest:** Derived using the same calculation that Funding Circle use to display "INTEREST" displayed on their website's Summary page: This is 'Net Interest'  = 'Interest repayment' + 'Early interest repayment' + 'Interest Credit' - 'Interest Debit'
 ## Command Line Arguments
 Either or both of the output format specifiers are required
-- `-- csv` for a spreadsheet-compatible table
-- `-- summary` for a 'pretty' human readable table
+- `--csv` for a spreadsheet-compatible table
+- `--summary` for a 'pretty' human readable table
+
+Optionally, a string to correctly identify 'Deposits' transactions is required if they appear in the Funding Circle statements with your name or BACS transfer reference instead of the generic 'TRANSFERIN' description. If you have made deposits from multiple different accounts which appear with different identifying names, the additional names can be entered as a comma separated list without whitespace. The name(s) you need to enter can be easily identified from any error messages the program prints.
+- `--name="NameOne[,NameTwo,NameThree,...]"`
 
 AND one or more Funding Circle monthly transaction statement csv files with the filename unchanged from it's original format of 'statement_2020-01_2020-02-01_12-34-56.csv'.
 

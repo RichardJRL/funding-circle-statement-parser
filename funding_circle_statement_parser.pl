@@ -13,6 +13,7 @@ my @statementResults;
 # variables to hold command line argument values
 my $claCsv = 0;
 my $claSummary = 0;
+my $claName = 'unset';
 my $claErrors = 0;
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -76,7 +77,7 @@ sub createStatementDataStructure {
             visible => 1,
         },
         'Deposits' => {
-            searchString => "TRANSFERIN|Leszczynski",
+            searchString => "TRANSFERIN|$claName",
             column => 2,
             index => 7,
             visible => 1,
@@ -430,6 +431,10 @@ if(@ARGV) {
             }
             elsif($currentArg =~ /\A--summary\Z/) {
                 $claSummary = 1;
+            }
+            elsif($currentArg =~ /\A--name=/) {
+                (undef, $claName) = split('=', $currentArg);
+                $claName =~ s/,/\|/g;
             }
             else {
                 print("ERROR: Unrecognised command line argument \'$currentArg\'\n")
