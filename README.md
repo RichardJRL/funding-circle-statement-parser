@@ -2,7 +2,7 @@
 ## Summary
 Perl program to create a summary of transactions from Funding Circle (www.fundingcircle.com) monthly transaction statements that are provided to lending account holders.
 ## License
-The contents of the repository RichardJRL/funding-circle-statement-parser are licensed under the GNU General Public License v3.0
+The contents of this repository are licensed under the GNU General Public License v3.0
 ## Abstract
 The program takes a lending account holder's monthly transaction statements as input, parses them and calculates monthy sum totals for each different transaction category identified within the statements. The program output is either a 'pretty' summary table or a comma separated value (csv) table which can be imported into a spreadsheet for further analysis.
 
