@@ -97,32 +97,32 @@ sub createStatementDataStructure {
         # ordering of the %transactionCategories hash in memory as the logic of this program is to 'next' once a matching transaction category 
         # has been found. 
         
-        # Principal Credit is the capital value of a loan paid by the buyer of a loan that has been sold in the secondary market to a new lender
-        # N.B. The sum of Principal Credit and Interest Credit should add up to the value of loans sold by the "Access Funds" process
+        # Principal credit is the capital value of a loan paid by the buyer of a loan that has been sold in the secondary market to a new lender
+        # N.B. The sum of Principal credit and Interest credit should add up to the value of loans sold by the "Access Funds" process
         # (only confirmed for the old selling process before the new process for selling with a fee was introduced on 2 December 2019.
         # I have no data subsequent to the change as I have not sold any loans with the "Access Funds" tool since.)
-        'Principal Credit' => {       # 'LPID: Principal Credit'
+        'Principal credit' => {       # 'LPID: Principal credit'
             searchString => 'Loan_Part_ID [0-9]+:Principal ([0-9]+\.[0-9]{2}):.*,\g{1},\Z',
             column => 2,
             index => 9,
             visible => 1,
         },
-        # Interest Credit is the partial month's interest paid by the buyer of a loan that has been sold on the secondary market to a new lender.
-        'Interest Credit' => {          # 'LPID: Interest Credit'
+        # Interest credit is the partial month's interest paid by the buyer of a loan that has been sold on the secondary market to a new lender.
+        'Interest credit' => {          # 'LPID: Interest credit'
             searchString => 'Loan_Part_ID [0-9]+.+:Interest ([0-9]+\.[0-9]{2}):.*,\g{1},\Z',
             column => 2,
             index => 10,
             visible => 1,
         },
-        # Principal Debit is the capital value paid to the orignal lender of a loan that has been purchased the secondary market.
-        'Principal Debit' => {          # 'LPID: Principal Debit'
+        # Principal debit is the capital value paid to the orignal lender of a loan that has been purchased the secondary market.
+        'Principal debit' => {          # 'LPID: Principal debit'
             searchString => 'Loan_Part_ID [0-9]+:Principal ([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',
             column => 3,
             index => 11,
             visible => 1,
         },
-        # Interest Debit is the partial month's interest paid to the orignal lender of a loan that has been purchased the secondary market.
-        'Interest Debit' => {           # 'LPID: Interest Debit'
+        # Interest debit is the partial month's interest paid to the orignal lender of a loan that has been purchased the secondary market.
+        'Interest debit' => {           # 'LPID: Interest debit'
             searchString => 'Loan_Part_ID [0-9]+.+:Interest ([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',
             column => 3,
             index => 12,
@@ -130,7 +130,7 @@ sub createStatementDataStructure {
         },
         # A historical feature of Funding Circle related to promotions. No longer used, replaced with the transfer payment.
         # NB: the regexp assumes it will always be a debit
-        'Historical Delta' => {                    # 'LPID: Historical Delta'
+        'Historical delta' => {                    # 'LPID: Historical delta'
             searchString => 'Loan_Part_ID [0-9]+.+:Delta ([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',
             column => 3,
             index => 13,
@@ -138,14 +138,21 @@ sub createStatementDataStructure {
         },
         # A historical feature of Funding Circle related to promotions. No longer used, replaced with the transfer payment.
         # NB: the regexp assumes it will always be a debit
-        'Historical Fees' => {                # 'LPID: Historical Fees'
+        'Historical fees' => {                # 'LPID: Historical fees'
             searchString => 'Loan_Part_ID [0-9]+.+:Fee ([0-9]+\.[0-9]{2}),[0-9]+\.[0-9]{2},\g{1}\Z',
             column => 3,
             index => 14,
             visible => 0,
         },
-        # N.B: The figure of "INTEREST" displayed on the Funding Circle website's Summary page is derived from:
-        # INTEREST = Interest repayment + Early interest repayment + Interest Credit - Interest Debit
+        # Net interest is calculated in the same way as "INTEREST" on the Funding Circle website's Summary page:
+        # Net interest = Interest repayment + Early interest repayment + Interest credit - Interest debit
+        # N.B: This is solely a derived figure and a 'Net interest' transaction category will never appear in a statement
+        'Net interest' => {
+            searchString => 'XXX-Net-Interest-XXX',     # As this is a derived category, its regexp should NEVER match a transaction category when parsing a statement!
+            column => 2,
+            index => 15,
+            visible => 1,
+        },
     );
     # print(Dumper(\%transactionCategories));
 
@@ -320,6 +327,28 @@ sub parseFile {
                 print("       Please report the unexpected transaction category\n");
                 print("       to have it included in future versions of the program.\n")
             }
+        }
+    }
+
+    # Calculate the derived 'Net Interest' category
+    my $netInterest = 0.00;
+    my $netInterestNumTransactions = 0;
+    foreach( @{$statementData->{TRANSACTIONDETAILSARRAY}} ) {
+        if( $_->{displayName} =~ /Interest repayment/ || 
+            $_->{displayName} =~ /Early interest repayment/ ||
+            $_->{displayName} =~ /Interest credit/ ) {
+            $netInterest += $_->{sumTotal};
+            $netInterestNumTransactions += $_->{numTransactions};
+        }
+        elsif ($_->{displayName} =~ /Interest debit/) {
+            $netInterest -= $_->{sumTotal};
+            $netInterestNumTransactions += $_->{numTransactions};
+        }
+    }
+    foreach( @{$statementData->{TRANSACTIONDETAILSARRAY}} ) {
+        if ($_->{displayName} =~ /Net interest/) {
+            $_->{sumTotal} = $netInterest;
+            $_->{numTransactions} = $netInterestNumTransactions;
         }
     }
 
