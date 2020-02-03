@@ -102,56 +102,88 @@ sub createStatementDataStructure {
         # N.B. The sum of Principal credit and Interest credit should add up to the value of loans sold by the "Access Funds" process
         # (only confirmed for the old selling process before the new process for selling with a fee was introduced on 2 December 2019.
         # I have no data subsequent to the change as I have not sold any loans with the "Access Funds" tool since.)
-        'Principal credit' => {       # 'LPID: Principal credit'
+        'Principal credit (old)' => {       # 'LPID: Principal credit'
             searchString => 'Loan_Part_ID [0-9]+:Principal ([0-9]+\.[0-9]{2}):.*,\g{1},\Z',
             column => 2,
             index => 9,
             visible => 1,
         },
         # Interest credit is the partial month's interest paid by the buyer of a loan that has been sold on the secondary market to a new lender.
-        'Interest credit' => {          # 'LPID: Interest credit'
+        'Interest credit (old)' => {          # 'LPID: Interest credit'
             searchString => 'Loan_Part_ID [0-9]+.+:Interest ([0-9]+\.[0-9]{2}):.*,\g{1},\Z',
             column => 2,
             index => 10,
             visible => 1,
         },
         # Principal debit is the capital value paid to the orignal lender of a loan that has been purchased the secondary market.
-        'Principal debit' => {          # 'LPID: Principal debit'
+        'Principal debit (old)' => {          # 'LPID: Principal debit'
             searchString => 'Loan_Part_ID [0-9]+:Principal ([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',
             column => 3,
             index => 11,
             visible => 1,
         },
         # Interest debit is the partial month's interest paid to the orignal lender of a loan that has been purchased the secondary market.
-        'Interest debit' => {           # 'LPID: Interest debit'
+        'Interest debit (old)' => {           # 'LPID: Interest debit'
             searchString => 'Loan_Part_ID [0-9]+.+:Interest ([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',
             column => 3,
             index => 12,
             visible => 1
         },
-        # A historical feature of Funding Circle related to promotions. No longer used, replaced with the transfer payment.
+        # A historical feature of Funding Circle related to promotions. No longer used, replaced with the transfer fee.
         # NB: the regexp assumes it will always be a debit
-        'Historical delta' => {                    # 'LPID: Historical delta'
+        'Historical delta (old)' => {                    # 'LPID: Historical delta'
             searchString => 'Loan_Part_ID [0-9]+.+:Delta ([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',
             column => 3,
             index => 13,
             visible => 0,
         },
-        # A historical feature of Funding Circle related to promotions. No longer used, replaced with the transfer payment.
+        # A historical feature of Funding Circle related to promotions. No longer used, replaced with the transfer fee.
         # NB: the regexp assumes it will always be a debit
-        'Historical fees' => {                # 'LPID: Historical fees'
+        'Historical fees (old)' => {                # 'LPID: Historical fees'
             searchString => 'Loan_Part_ID [0-9]+.+:Fee ([0-9]+\.[0-9]{2}),[0-9]+\.[0-9]{2},\g{1}\Z',
             column => 3,
             index => 14,
             visible => 0,
         },
+        # Principal debit is the capital value paid to the orignal lender of a loan that has been purchased the secondary market.
+        # TODO: Combine Principal debit (old) with Principal debit (new). Only difference in regexp will be optional '£' (\x{00A3}) in the transaction description
+        'Principal debit (new)' => {          # 'LPID: Principal debit (new)'
+            searchString => 'Loan_Part_ID [0-9]+:Principal \x{00A3}([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',
+            column => 3,
+            index => 15,
+            visible => 1,
+        },
+        # Interest debit is the partial month's interest paid to the orignal lender of a loan that has been purchased the secondary market.
+        # Value in the transaction description should be a positive number
+        'Interest debit (new)' => {           # 'LPID: Interest debit (new)'
+            searchString => 'Loan_Part_ID [0-9]+.+:Interest \x{00A3}([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',
+            column => 3,
+            index => 16,
+            visible => 1
+        },
+        # Transfer fee credit is the 1.25% fee paid by the seller of a loan on the secondary market to the purchaser.
+        # Value in the transaction description should be a negative number, but it should appear as a positive number in the credit column (after initial transaction line modificaiton)
+        'Transfer fee credit' => {                # 'LPID: Transfer fee credit'
+            searchString => 'Loan_Part_ID [0-9]+.+:Transfer_Payment \x{00A3}-([0-9]+\.[0-9]{2}):.*,\g{1},[0-9]+\.[0-9]{2}\Z',
+            column => 2,
+            index => 17,
+            visible => 1,
+        },
+        # # Transfer fee debit is the .
+        # # NB: the regexp assumes it will always be a debit
+        # 'Transfer fee debit' => {                # 'LPID: Transfer fee debit'
+        #     searchString => 'Loan_Part_ID [0-9]+.+:Fee ([0-9]+\.[0-9]{2}),[0-9]+\.[0-9]{2},\g{1}\Z',
+        #     column => 3,
+        #     index => 18,
+        #     visible => 0,
+        # },
         # Net interest is calculated in the same way as "INTEREST" on the Funding Circle website's Summary page:
         # Net interest = Interest repayment + Early interest repayment + Interest credit - Interest debit
         # N.B: This is solely a derived figure and a 'Net interest' transaction category will never appear in a statement
         'Net interest (derived)' => {
             searchString => 'XXX-Net-interest-XXX',     # As this is a derived category, its regexp should NEVER match a transaction category when parsing a statement!
             column => 2,
-            index => 15,
+            index => 19,
             visible => 1,
         },
     );
@@ -272,12 +304,6 @@ sub parseFile {
             # most of the following modifications apply specifically to the last-day-of-the-month entries containing the string "Loan Part ID ..."
             if($line =~ '"') {
                 # print("         line: $line\n");
-                # insert a value of 0.00 between two adjacent commas to prevent any inadvertent "use of uninitialized value in addition..." errors
-                $line =~ s/,,/,0\.00,/g;
-                # values within the "Loan Part ID ..." transaction description are only displayed to 1DP in the credit/debit columns if the penny value is zero with prevents backreference matching
-                # make sure all credit/debit values are displayed to 2DP 
-                $line =~ s/(?<alpha>\.[0-9]),/$+{alpha}0,/g;
-                $line =~ s/(?<alpha>\.[0-9])\Z/$+{alpha}0/g;
                 # rewrite 'Loan Part ID' with underscores to aid splitting the transaction description on spaces if necessary later
                 $line =~ s/Loan Part ID/Loan_Part_ID/g;
                 # remove problematic commas within doublequoted sections of the transaction description which will otherwise interfere with spliting upon comma-delimited data columns later. 
@@ -288,6 +314,73 @@ sub parseFile {
                 my @tempLineArray = split('"', $line);
                 $tempLineArray[1] =~ s/\s*[,:]\s*/:/g;
                 $line = join('', @tempLineArray);
+                @tempLineArray = undef;
+                # insert a value of 0.00 between two adjacent commas to prevent any inadvertent "use of uninitialized value in addition..." errors
+                $line =~ s/,,/,0\.00,/g;
+                # deal with the new method of purchasing and selling loans on the secondary market from 2 December 2019 which introduces derived
+                # values in the credit or debit column calculated from multiple orignal values held within the transaction description field
+                # These transactions are the only ones which contain a '£' symbol, a.k.a '\x{00A3}' in unicode
+                # Each purchase is covered by two lines, one for ONLY the loan capital, the other containing BOTH Transfer Payment and Interest figures
+                # TODO: Each loan sale is covered by two lines - OR is it three lines like with the old loan sales?
+                if($line =~ /\x{00A3}/) {
+                    # need to work out if the transaction is a loan sale or loan purchase based on whether the value of 'Transfer Payment'
+                    # in the transaction description is positive or negative
+                    # NB: Working half-blind as I only have transactions for loan purchases, NOT loan sales for this period for reference
+                    # 
+                    # If Transfer Payment is negative, then it is a loan purchase and two things must change:
+                    # Transfer Payment must be copied to the credit column with its negative sign removed, and
+                    # Interest must be copied to the debit colum.
+                    # Currently AFAIK a net of these two figures will be displayed in the credit column, and nothing in the debit column
+                    #
+                    # Conversely, if the Transfer Payment is positive (speculation based on the above ) then it is a loan sale and two things must change:
+                    # Transfer Payment must be copied to the debit column, and
+                    # Interest must be copied to the credit colum with its (SPECULATIVE) negative sign removed.
+                    # Currently AFAIK a net of these two figures will be displayed in the debit column, and nothing in the credit column (NB: Speculation - I have no transactions to check against)
+                    #
+                    # Also note: This type of transaction also prevents the most efficient use of 'last' in the transaction category matching and summing code
+                    # below as some lines now need to match against TWO transaction categories in order to record all necessary information.
+                    # Distinguish between loan sales and loan purchases based on the sign of the Transfer Payment value
+
+                    if($line !~ /Loan_Part_ID [0-9]+:Principal \x{00A3}([0-9]+\.[0-9]{2}):.*,.*\g{1}/) {
+                        # Split line on commas, transaction description field on colons
+                        @tempLineArray = split(',', $line);
+                        $tempLineArray[1] =~ s/Transfer Payment/Transfer_Payment/;
+                        # print(Dumper(@tempLineArray));
+                        my @transactionDescriptionArray = split(':', $tempLineArray[1]);
+                        # print(Dumper(@transactionDescriptionArray));
+                        # Interest is at array index 2, Transfer Payment is at array index 3
+                        (undef, my $interest) = split(' ', $transactionDescriptionArray[2]);
+                        (undef, my $transferPayment) = split(' ', $transactionDescriptionArray[3]);
+                        $transferPayment =~ s/\x{00A3}//g;
+                        $interest =~ s/\x{00A3}//g;
+
+                        # Distinguish between loan purchase and loan sale using a the sign of the Transfer Payment value
+                        if($transferPayment =~ /-/) {    # loan purchase
+                            $transferPayment =~ s/-//g;
+                            my $net = $transferPayment - $interest;
+                            # print("Interest value is $interest, Transfer Payment value is $transferPayment, net result is " . $net. "\n");
+                            # now insert correct Interest and Transfer Payment values back into the lineArray before joining it all together again 
+                            $tempLineArray[2] = $transferPayment;
+                            $tempLineArray[3] = $interest;
+                        }
+                        else {  # loan sale, TODO: THIS IS SPECULATION, needs an example of an actual loan sale to confirm the logic here
+                            $interest =~ s/-//g;    
+                            my $net = $interest - $transferPayment;
+                            # print("Interest value is $interest, Transfer Payment value is $transferPayment, net result is " . $net. "\n");
+                            # now insert correct Interest and Transfer Payment values back into the lineArray before joining it all together again 
+                            $tempLineArray[2] = $interest;
+                            $tempLineArray[3] = $transferPayment;
+                        }
+                        # Put Humpty Dumpty back together again
+                        # print(Dumper(@tempLineArray));
+                        $tempLineArray[1] = join(':', @transactionDescriptionArray);
+                        $line = join(',', @tempLineArray);
+                    }
+                }
+                # values within the "Loan Part ID ..." transaction description are only displayed to 1DP in the credit/debit columns if the penny value is zero with prevents backreference matching
+                # make sure all credit/debit values are displayed to 2DP 
+                $line =~ s/(?<alpha>\.[0-9]),/$+{alpha}0,/g;
+                $line =~ s/(?<alpha>\.[0-9])\Z/$+{alpha}0/g;
                 # print("Modified line: $line\n");
             }
 
@@ -318,7 +411,10 @@ sub parseFile {
                         $statementData->{DATEEND} = $newDate;
                     }
                     # match found, so save time by not trying to carry on matching against any the remaining transaction categories
-                    last;
+                    # UNLESS it is from one of the new post 2 December 2019 seondary market loan sales or purchases, which may need to be matched twice per line!
+                    if($_->{index} < 15) {
+                        last;
+                    }
                 }
             }
             # handle any unexpected lines
@@ -332,6 +428,8 @@ sub parseFile {
     }
 
     # Calculate the derived 'Net Interest' category
+    # TODO: Update this calc for the new secondary market loan sale/purchase transactions
+    # TODO: Change to matching a boolean 'interest variable' instead of displayName and adding/subtracting based on column? 
     my $netInterest = 0.00;
     my $netInterestNumTransactions = 0;
     foreach( @{$statementData->{TRANSACTIONDETAILSARRAY}} ) {

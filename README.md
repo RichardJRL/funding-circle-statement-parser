@@ -18,14 +18,17 @@ The following transaction categories are summarised by the program:
 - **Fees:** Fees paid to Funding Circle
 - **Deposits:** Money added to Funding Circle by the account holder from their own bank account
 - **Withdrawals:** Money withdrawn from Funding Circle by the account holder to their own bank account
-- **Principal Credit:** For loans sold on the secondary market by the account holder to other borrowers (e.g. by using "Access Funds"), this is the value of the remaining loan principal of loans sold
-- **Interest Credit:** For loans sold on the secondary market by the account holder to other borrowers (e.g. by using "Access Funds"), this is the value of the interest that has accrued between the last received interest payment and the loan sale date. It is paid by the purchaser of the loan to the account holder. (The purchaser later receives the full month's interest from the borrower as scheduled.)
-- **Principal Debit:** For loans purchased the secondary market, this is the value of the remaining loan capital and is paid by the account holder to the seller.
-- **Interest Debit:** For loans purchased the secondary market, this is the value of the interest that has accrued between the last received interest payment and the loan purchase date and is paid by the account holder to the seller. (The account holder later receives the full month's interest from the borrower as scheduled.)
-- **Historical Delta:** A historical feature of Funding Circle related to promotions. No longer used, replaced with the transfer payment. (NB:** if it ever appears, the program assumes it will always be a debit.)
-- **Historical Fees:** A historical feature of Funding Circle related to promotions. No longer used, replaced with the transfer payment. (NB: if it ever appears, the program assumes it will always be a debit.)
+- **Principal credit (old):** For loans sold on the secondary market before 2 December 2019 by the account holder to other borrowers (e.g. by using "Access Funds"), this is the value of the remaining loan principal of loans sold
+- **Interest credit (old):** For loans sold on the secondary market  before 2 December 2019 by the account holder to other borrowers (e.g. by using "Access Funds"), this is the value of the interest that has accrued between the last received interest payment and the loan sale date. It is paid by the purchaser of the loan to the account holder. (The purchaser later receives the full month's interest from the borrower as scheduled.)
+- **Principal debit (old):** For loans purchased the secondary market before 2 December 2019, this is the value of the remaining loan capital and is paid by the account holder to the seller.
+- **Interest debit (old):** For loans purchased the secondary market before 2 December 2019, this is the value of the interest that has accrued between the last received interest payment and the loan purchase date and is paid by the account holder to the seller. (The account holder later receives the full month's interest from the borrower as scheduled.)
+- **Historical Delta (old):** A historical feature of Funding Circle related to promotions. No longer used, replaced with the transfer payment. (NB:** if it ever appears, the program assumes it will always be a debit.)
+- **Historical Fees (old):** A historical feature of Funding Circle related to promotions. No longer used, replaced with the transfer payment. (NB: if it ever appears, the program assumes it will always be a debit.)
+- **Principal debit (new):** For loans purchased the secondary market on or after 2 December 2019, this is the value of the remaining loan capital and is paid by the account holder to the seller.
+- **Interest debit (new):** For loans purchased the secondary market on or after 2 December 2019, this is the value of the interest that has accrued between the last received interest payment and the loan purchase date and is paid by the account holder to the seller. (The account holder later receives the full month's interest from the borrower as scheduled.)
+- **Transfer payment credit (new):** For loans purchased the secondary market on or after 2 December 2019, this is the 1.25% fee paid by the seller of the loan to the purchaser.
 ## Derived Categories
-- **Net interest:** Derived using the same calculation that Funding Circle use to display "INTEREST" displayed on their website's Summary page: This is 'Net Interest'  = 'Interest repayment' + 'Early interest repayment' + 'Interest Credit' - 'Interest Debit'
+- **Net interest:** Derived using the same calculation that Funding Circle use to display "INTEREST" displayed on their website's Summary page: This is 'Net Interest'  = 'Interest repayment' + 'Early interest repayment' + 'Interest credit' - 'Interest debit'
 ## Command Line Arguments
 Either or both of the output format specifiers are required
 - `--csv` for a spreadsheet-compatible table
@@ -73,16 +76,16 @@ WARNING: Statement may not contain all transactions for the whole calendar month
         Fees                          £  -1.45 from 131 transactions
         Deposits                      £  10.00 from   1 transactions
         Withdrawals                   £ -61.95 from   2 transactions
-        Principal Credit              £   0.00 from   0 transactions
-        Interest Credit               £   0.00 from   0 transactions
-        Principal Debit               £   0.00 from   0 transactions
-        Interest Debit                £   0.00 from   0 transactions
+        Principal credit              £   0.00 from   0 transactions
+        Interest credit               £   0.00 from   0 transactions
+        Principal debit               £   0.00 from   0 transactions
+        Interest debit                £   0.00 from   0 transactions
 
 ```
 `--csv` style of output:
 
 ```
-    Date, Interest repayment, Early interest repayment, Principal repayment, Early principal repayment, Principal recovery repayment, New loans made,  Fees, Deposits, Withdrawals, Principal Credit, Interest Credit, Principal Debit, Interest Debit
+    Date, Interest repayment, Early interest repayment, Principal repayment, Early principal repayment, Principal recovery repayment, New loans made,  Fees, Deposits, Withdrawals, Principal credit, Interest credit, Principal debit, Interest debit
  2019-10,              40.29,                     0.46,              134.63,                     48.07,                         0.37,           0.00, -4.53,     0.00,    -3625.00,          3009.57,            9.80,            0.00,           0.00
  2019-11,              15.79,                     0.23,               73.51,                     26.51,                         0.31,           0.00, -1.87,     0.00,     -125.00,             0.00,            0.00,            0.00,           0.00
  2019-12,              14.35,                     0.03,               71.98,                     10.00,                         0.31,           0.00, -1.67,     0.00,     -135.00,             0.00,            0.00,            0.00,           0.00
