@@ -1,0 +1,16 @@
+Old-style "Loan Part ID" transactions in the December 2019 statement.
+(3 transactions for a single Loan Part sale)
+2019-10-30,"Loan Part ID 12345678 : Principal 20.12, Interest 0.11, Delta 0.00, Fee 0.00",20.12,
+2019-10-30,"Loan Part ID 12345678 : Principal 20.12, Interest 0.11, Delta 0.00, Fee 0.00",,0.0
+2019-10-30,"Loan Part ID 12345678 : Principal 20.12, Interest 0.11, Delta 0.00, Fee 0.00",0.11,
+
+Old-style "Loan Part ID" transactions in the December 2019 statement. 
+(2 transactions for a single Loan Part purchase)
+2018-10-31,"Loan Part ID 12345678 : Principal 11.23, Interest 0.05, Delta 0.00, Fee 0.00",,11.23
+2018-10-31,"Loan Part ID 12345678 : Principal 11.23, Interest 0.05, Delta 0.00, Fee 0.00",,0.05
+
+New "Transfer Payment" transaction categories appear in the "Loan Part ID" transactions in the January 2020 statement.
+(2 transactions for a single Loan Part purchase)
+NB: THE FIGURE IN THE CREDIT COLUMN IS DERIVED FROM THE FIGURES IN THE TRANSACTION DESCRIPTION COLUMN! (WHICH IS A PAIN!!) 
+2020-01-31,"Loan Part ID 12345678 : Principal £8.47, Interest £0.03, Transfer Payment £-0.11, Fee £0.00",,8.47
+2020-01-31,"Loan Part ID 12345678 : Principal £8.47, Interest £0.03, Transfer Payment £-0.11, Fee £0.00",0.08,
