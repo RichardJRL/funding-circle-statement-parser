@@ -2,7 +2,7 @@
 ## Summary
 Perl program to create a summary of transactions from Funding Circle (www.fundingcircle.com) monthly transaction statements that are provided to lending account holders.
 ## License
-The contents of the repository RichardJRL/funding-circle-statement-parser are licensed under the GNU General Public License v3.0
+The contents of this repository are licensed under the GNU General Public License v3.0
 ## Abstract
 The program takes a lending account holder's monthly transaction statements as input, parses them and calculates monthy sum totals for each different transaction category identified within the statements. The program output is either a 'pretty' summary table or a comma separated value (csv) table which can be imported into a spreadsheet for further analysis.
 
@@ -34,7 +34,7 @@ Either or both of the output format specifiers are required
 - `--csv` for a spreadsheet-compatible table
 - `--summary` for a 'pretty' human readable table
 
-Optionally, a string to correctly identify 'Deposits' transactions is required if they appear in the Funding Circle statements with your name or BACS transfer reference instead of the generic 'TRANSFERIN' description. If you have made deposits from multiple different accounts which appear with different identifying names, the additional names can be entered as a comma separated list without whitespace. The name(s) you need to enter can be easily identified from any error messages the program prints.
+Optionally, a string to correctly identify 'Deposits' transactions is required if they appear in the Funding Circle statements with your name or BACS transfer reference instead of the generic 'TRANSFERIN' description. If you have made deposits from multiple different accounts which appear with different identifying names, the additional names can be entered as a comma separated list. The name(s) you need to enter can be easily identified from any error messages the program prints.
 - `--name="NameOne[,NameTwo,NameThree,...]"`
 
 AND one or more Funding Circle monthly transaction statement csv files with the filename unchanged from it's original format of 'statement_2020-01_2020-02-01_12-34-56.csv'.
