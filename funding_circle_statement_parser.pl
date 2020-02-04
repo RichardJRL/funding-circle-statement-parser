@@ -28,6 +28,7 @@ sub createStatementDataStructure {
     # create the required data structures for storing information parsed from a statement file
     
     # all the different categories of transaction available in a statement
+    # comprehensive descriptions of each transaction category are included in the README.md file
     # The primary key of each hash of hashes is actually the pretty display name of the transaction category to be shown in the results
     # searchString is the string or regexp that can be searched for to uniquely identify a particular transaction category in the statement 
     # column is the data column in the csv file to parse the transaction value from. Valid values are 2 for a credit or 3 for a debit
@@ -106,38 +107,38 @@ sub createStatementDataStructure {
         # recorded in the debit column as a value 0.0 but the value for both in the transaction description column is also recorded as 0.00 
         # If either a Fee or a Delta is found to be NOT a debit then a regexp that can differentiate between them can be constructed, but until 
         # then it is ambiguous and EITHER all Fees OR all Delta will be counted for each individual execution of the program, depending on the
-        # ordering of the %transactionCategories hash in memory as the logic of this program is to 'next' once a matching transaction category 
+        # ordering of the %transactionCategories hash in memory as the logic of this program is to 'last' once a matching transaction category 
         # has been found. 
         
-        # Principal credit is the capital value of a loan paid by the buyer of a loan that has been sold in the secondary market to a new lender
+        # Principal credit (old) is the capital value paid by the buyer of a loan that has been sold in the secondary market to a new lender
         # N.B. The sum of Principal credit and Interest credit should add up to the value of loans sold by the "Access Funds" process
         # (only confirmed for the old selling process before the new process for selling with a fee was introduced on 2 December 2019.
         # I have no data subsequent to the change as I have not sold any loans with the "Access Funds" tool since.)
-        'Principal credit (old)' => {       # 'LPID: Principal credit'
+        'Principal credit (old)' => {
             searchString => 'Loan_Part_ID [0-9]+:Principal ([0-9]+\.[0-9]{2}):.*,\g{1},\Z',
             column => 2,
             index => 9,
             visible => 1,
             derivedGroup => 0,
         },
-        # Interest credit is the partial month's interest paid by the buyer of a loan that has been sold on the secondary market to a new lender.
-        'Interest credit (old)' => {          # 'LPID: Interest credit'
+        # Interest credit (old) is the partial month's interest paid by the buyer of a loan on the secondary market to the account holder.
+        'Interest credit (old)' => {
             searchString => 'Loan_Part_ID [0-9]+.+:Interest ([0-9]+\.[0-9]{2}):.*,\g{1},\Z',
             column => 2,
             index => 10,
             visible => 1,
             derivedGroup => 1,
         },
-        # Principal debit is the capital value paid to the orignal lender of a loan that has been purchased the secondary market.
-        'Principal debit (old)' => {          # 'LPID: Principal debit'
+        # Principal debit (old) is the capital value paid to the orignal lender of a loan that has been purchased the secondary market.
+        'Principal debit (old)' => {
             searchString => 'Loan_Part_ID [0-9]+:Principal ([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',
             column => 3,
             index => 11,
             visible => 1,
             derivedGroup => 0,
         },
-        # Interest debit is the partial month's interest paid to the orignal lender of a loan that has been purchased the secondary market.
-        'Interest debit (old)' => {           # 'LPID: Interest debit'
+        # Interest debit (old) is the partial month's interest paid to the orignal lender of a loan that has been purchased the secondary market.
+        'Interest debit (old)' => {
             searchString => 'Loan_Part_ID [0-9]+.+:Interest ([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',
             column => 3,
             index => 12,
@@ -146,7 +147,7 @@ sub createStatementDataStructure {
         },
         # A historical feature of Funding Circle related to promotions. No longer used, replaced with the transfer fee.
         # NB: the regexp assumes it will always be a debit
-        'Historical delta (old)' => {                    # 'LPID: Historical delta'
+        'Historical delta (old)' => {
             searchString => 'Loan_Part_ID [0-9]+.+:Delta ([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',
             column => 3,
             index => 13,
@@ -155,68 +156,67 @@ sub createStatementDataStructure {
         },
         # A historical feature of Funding Circle related to promotions. No longer used, replaced with the transfer fee.
         # NB: the regexp assumes it will always be a debit
-        'Historical fees (old)' => {                # 'LPID: Historical fees'
+        'Historical fees (old)' => {
             searchString => 'Loan_Part_ID [0-9]+.+:Fee ([0-9]+\.[0-9]{2}),[0-9]+\.[0-9]{2},\g{1}\Z',
             column => 3,
             index => 14,
             visible => 0,
             derivedGroup => 0,
         },
-        # Principal debit is the capital value paid to the orignal lender of a loan that has been purchased the secondary market.
-        # TODO: Combine Principal debit (old) with Principal debit (new). Only difference in regexp will be optional '£' (\x{00A3}) in the transaction description
-        'Principal debit (new)' => {          # 'LPID: Principal debit (new)'
-            searchString => 'Loan_Part_ID [0-9]+:Principal \x{00A3}([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',
-            column => 3,
+        # Principal credit (new) is the capital value paid to the orignal lender of a loan that has been purchased the secondary market.
+        'Principal credit (new)' => {
+            searchString => 'Loan_Part_ID [0-9]+:Principal \x{00A3}([0-9]+\.[0-9]{2}):.*,\g{1},\Z',
+            column => 2,
             index => 15,
             visible => 1,
             derivedGroup => 0,
         },
-        # Interest debit is the partial month's interest paid to the orignal lender of a loan that has been purchased the secondary market.
+        # Interest credit (new) is the partial month's interest paid to the orignal lender of a loan that has been purchased the secondary market.
         # Value in the transaction description should be a positive number
-        'Interest debit (new)' => {           # 'LPID: Interest debit (new)'
-            searchString => 'Loan_Part_ID [0-9]+.+:Interest \x{00A3}([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',
-            column => 3,
+        'Interest credit (new)' => {
+            searchString => 'Loan_Part_ID [0-9]+.+:Interest \x{00A3}-([0-9]+\.[0-9]{2}):.*,\g{1},[0-9]+\.[0-9]{2}\Z',
+            column => 2,
             index => 16,
             visible => 1,
             derivedGroup => 1,
         },
-        # Transfer fee credit is the 1.25% fee paid by the seller of a loan on the secondary market to the purchaser.
-        # Value in the transaction description should be a negative number, but it should appear as a positive number in the credit column (after initial transaction line modificaiton)
-        'Transfer fee credit' => {                # 'LPID: Transfer fee credit'
-            searchString => 'Loan_Part_ID [0-9]+.+:Transfer_Payment \x{00A3}-([0-9]+\.[0-9]{2}):.*,\g{1},[0-9]+\.[0-9]{2}\Z',
-            column => 2,
+        # Transfer fee debit is the is the 1.25% fee paid by the account holder to the purchaser of a loan sold on the secondary market.
+        'Transfer fee debit' => {
+            searchString => 'Loan_Part_ID [0-9]+.+:Transfer_Payment \x{00A3}([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',   # TODO: Untested
+            column => 3,
             index => 17,
             visible => 1,
             derivedGroup => 2,
         },
-         # Principal credit is the capital value paid to the orignal lender of a loan that has been purchased the secondary market.
+        # Principal debit (new) is the capital value paid to the orignal lender of a loan that has been purchased the secondary market.
         # TODO: Combine Principal debit (old) with Principal debit (new). Only difference in regexp will be optional '£' (\x{00A3}) in the transaction description
-        'Principal credit (new)' => {          # 'LPID: Principal credit (new)'
-            searchString => 'Loan_Part_ID [0-9]+:Principal \x{00A3}([0-9]+\.[0-9]{2}):.*,\g{1},\Z',
-            column => 2,
+        'Principal debit (new)' => {
+            searchString => 'Loan_Part_ID [0-9]+:Principal \x{00A3}([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',
+            column => 3,
             index => 18,
             visible => 1,
             derivedGroup => 0,
         },
-        # Interest credit is the partial month's interest paid to the orignal lender of a loan that has been purchased the secondary market.
+        # Interest debit (new) is the partial month's interest paid to the orignal lender of a loan that has been purchased the secondary market.
         # Value in the transaction description should be a positive number
-        'Interest credit (new)' => {           # 'LPID: Interest credit (new)'
-            searchString => 'Loan_Part_ID [0-9]+.+:Interest \x{00A3}-([0-9]+\.[0-9]{2}):.*,\g{1},[0-9]+\.[0-9]{2}\Z',
-            column => 2,
+        'Interest debit (new)' => {
+            searchString => 'Loan_Part_ID [0-9]+.+:Interest \x{00A3}([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',
+            column => 3,
             index => 19,
             visible => 1,
             derivedGroup => 1,
         },
-        # Transfer fee debit is the is the 1.25% fee paid by the seller of a loan on the secondary market to the purchaser.
-        'Transfer fee debit' => {                # 'LPID: Transfer fee debit'
-            searchString => 'Loan_Part_ID [0-9]+.+:Transfer_Payment \x{00A3}([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',   # TODO: Untested
-            column => 3,
+        # Transfer fee debit is the is the 1.25% fee paid by the seller of a loan sold on the secondary market to the account holder.
+        # Value in the transaction description should be a negative number, but it should appear as a positive number in the credit column (after initial transaction line modificaiton)
+        'Transfer fee credit' => {
+            searchString => 'Loan_Part_ID [0-9]+.+:Transfer_Payment \x{00A3}-([0-9]+\.[0-9]{2}):.*,\g{1},[0-9]+\.[0-9]{2}\Z',
+            column => 2,
             index => 20,
             visible => 1,
             derivedGroup => 2,
         },
         # Net interest is calculated in the same way as "INTEREST" on the Funding Circle website's Summary page:
-        # Net interest = Interest repayment + Early interest repayment + Interest credit (old) + Interest credit (new) - Interest debit (old) -Interest debit (new)
+        # Net interest = Interest repayment + Early interest repayment + Interest credit (old) + Interest credit (new) - Interest debit (old) - Interest debit (new)
         # N.B: This is solely a derived figure and a 'Net interest' transaction category will never appear in a statement
         'Net interest (derived)' => {
             searchString => 'XXX-Net-interest-XXX',     # As this is a derived category, its regexp should NEVER match a transaction category when parsing a statement!
@@ -226,6 +226,7 @@ sub createStatementDataStructure {
             derivedGroup => -1,
         },
         # Net transfer fee is calculated in the same way as "NET TRANSFER FEE" on the Funding Circle website's Summary page:
+        # N.B: This is solely a derived figure and a 'Net transfer fee' transaction category will never appear in a statement
         'Net transfer fee (derived)' => {
             searchString => 'XXX-Net-transfer-fee-XXX',     # As this is a derived category, its regexp should NEVER match a transaction category when parsing a statement!
             column => 2,
@@ -286,8 +287,6 @@ sub createStatementDataStructure {
     # set initial values for DATESTART and DATEEND (or is it better to set to undef?)
     $emptyStatementData->{DATESTART} = Time::Piece->strptime("2050-01-01_00-00-00", "%Y-%m-%d_%H-%M-%S");
     $emptyStatementData->{DATEEND} = Time::Piece->strptime("2000-01-01", "%Y-%m-%d");
-    # print("DATESTART initialised to $emptyStatementData->{DATESTART}\n");
-    # print("DATEEND initialised to " . "$emptyStatementData->{DATEEND}\n");
 
     # return a reference to the created data structure
     return $emptyStatementData;
@@ -309,7 +308,7 @@ sub parseFile {
     $statementData->{STATEMENTVOLUME} = $fileSpecArray[0];
     $statementData->{STATEMENTDIRECTORY} = $fileSpecArray[1];
     $statementData->{STATEMENTFILENAME} = $fileSpecArray[2];
-    # print("fileSpecArray: " . Dumper(@fileSpecArray));
+    # print(Dumper(@fileSpecArray));
 
     # parse the filename only to get information on the period the statement covers and the date on which it was downloaded.
     # filename is of the format (ST = statement, DL = download)
@@ -344,7 +343,7 @@ sub parseFile {
         chomp $line;
         # ignore the line with the text for the column titles.
         if ($line =~ /^Date/) {
-            # print("Column titles found: $line\n");
+            # do nothing
         }
 
         # match any line starting with a date code of the format YYYY-MM-DD 
@@ -462,7 +461,7 @@ sub parseFile {
                     }
                     # match found, so save time by not trying to carry on matching against any the remaining transaction categories
                     # UNLESS it is from one of the new post 2 December 2019 seondary market loan sales or purchases, which may need to be matched twice per line!
-                    if($_->{index} < 15) {
+                    if($_->{index} < 15) {  # TODO: keep checking this {index} value is correct
                         last;
                     }
                 }
