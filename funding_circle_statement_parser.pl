@@ -33,60 +33,71 @@ sub createStatementDataStructure {
     # column is the data column in the csv file to parse the transaction value from. Valid values are 2 for a credit or 3 for a debit
     # index is the position the transaction category will occupy in the table of results. Each index value should be a unique positive integer.
     # visible is a boolean value for whether or not the transaction category will be shown in the results: 1=show, 0=hide
+    # derivedGroup is a positive integer value for grouping transaction categories together for the purposes of calulating derived, net category totals
+    # and the derived transaction category should have the equal and opposite (negative) integer. 0 for no associated derived group.
     my %transactionCategories = (
         'Interest repayment' => {
             searchString  => "Interest repayment",
             column => 2,
             index => 0,
             visible => 1,
+            derivedGroup => 1,
         },
         'Early interest repayment' => {
             searchString => "Early interest repayment",
             column => 2,
             index => 1,
             visible => 1,
+            derivedGroup => 1,
         },
         'Principal repayment' => {
             searchString => "Principal repayment",
             column => 2,
             index => 2,
             visible => 1,
+            derivedGroup => 0,
         },
         'Early principal repayment' => {
             searchString => "Early principal repayment",
             column => 2,
             index => 3,
             visible => 1,
+            derivedGroup => 0,
         },
         'Principal recovery repayment' => {
             searchString => "Principal recovery repayment",
             column => 2,
             index => 4,
             visible => 1,
+            derivedGroup => 0,
         },
         'New loans made' => {
             searchString => "Loan offer",
             column => 3,
             index => 5,
             visible => 1,
+            derivedGroup => 0,
         },
         'Fees' => {
             searchString => "Servicing fee",
             column => 3,
             index => 6,
             visible => 1,
+            derivedGroup => 0,
         },
         'Deposits' => {
             searchString => "TRANSFERIN|$claName",
             column => 2,
             index => 7,
             visible => 1,
+            derivedGroup => 0,
         },
         'Withdrawals' => {
             searchString => "Withdrawal",
             column => 3,
             index => 8,
             visible => 1,
+            derivedGroup => 0,
         },
         # processing matching lines containing 'Loan Part ID [0-9]+ : Principal...' requires more complex regexps.
         # The transaction description column of this line contains four transaction categories that will be impossible to differentiate if two
@@ -107,6 +118,7 @@ sub createStatementDataStructure {
             column => 2,
             index => 9,
             visible => 1,
+            derivedGroup => 0,
         },
         # Interest credit is the partial month's interest paid by the buyer of a loan that has been sold on the secondary market to a new lender.
         'Interest credit (old)' => {          # 'LPID: Interest credit'
@@ -114,6 +126,7 @@ sub createStatementDataStructure {
             column => 2,
             index => 10,
             visible => 1,
+            derivedGroup => 1,
         },
         # Principal debit is the capital value paid to the orignal lender of a loan that has been purchased the secondary market.
         'Principal debit (old)' => {          # 'LPID: Principal debit'
@@ -121,13 +134,15 @@ sub createStatementDataStructure {
             column => 3,
             index => 11,
             visible => 1,
+            derivedGroup => 0,
         },
         # Interest debit is the partial month's interest paid to the orignal lender of a loan that has been purchased the secondary market.
         'Interest debit (old)' => {           # 'LPID: Interest debit'
             searchString => 'Loan_Part_ID [0-9]+.+:Interest ([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',
             column => 3,
             index => 12,
-            visible => 1
+            visible => 1,
+            derivedGroup => 1,
         },
         # A historical feature of Funding Circle related to promotions. No longer used, replaced with the transfer fee.
         # NB: the regexp assumes it will always be a debit
@@ -136,6 +151,7 @@ sub createStatementDataStructure {
             column => 3,
             index => 13,
             visible => 0,
+            derivedGroup => 0,
         },
         # A historical feature of Funding Circle related to promotions. No longer used, replaced with the transfer fee.
         # NB: the regexp assumes it will always be a debit
@@ -144,6 +160,7 @@ sub createStatementDataStructure {
             column => 3,
             index => 14,
             visible => 0,
+            derivedGroup => 0,
         },
         # Principal debit is the capital value paid to the orignal lender of a loan that has been purchased the secondary market.
         # TODO: Combine Principal debit (old) with Principal debit (new). Only difference in regexp will be optional '£' (\x{00A3}) in the transaction description
@@ -152,6 +169,7 @@ sub createStatementDataStructure {
             column => 3,
             index => 15,
             visible => 1,
+            derivedGroup => 0,
         },
         # Interest debit is the partial month's interest paid to the orignal lender of a loan that has been purchased the secondary market.
         # Value in the transaction description should be a positive number
@@ -159,7 +177,8 @@ sub createStatementDataStructure {
             searchString => 'Loan_Part_ID [0-9]+.+:Interest \x{00A3}([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',
             column => 3,
             index => 16,
-            visible => 1
+            visible => 1,
+            derivedGroup => 1,
         },
         # Transfer fee credit is the 1.25% fee paid by the seller of a loan on the secondary market to the purchaser.
         # Value in the transaction description should be a negative number, but it should appear as a positive number in the credit column (after initial transaction line modificaiton)
@@ -168,23 +187,51 @@ sub createStatementDataStructure {
             column => 2,
             index => 17,
             visible => 1,
+            derivedGroup => 2,
         },
-        # # Transfer fee debit is the .
-        # # NB: the regexp assumes it will always be a debit
-        # 'Transfer fee debit' => {                # 'LPID: Transfer fee debit'
-        #     searchString => 'Loan_Part_ID [0-9]+.+:Fee ([0-9]+\.[0-9]{2}),[0-9]+\.[0-9]{2},\g{1}\Z',
-        #     column => 3,
-        #     index => 18,
-        #     visible => 0,
-        # },
+         # Principal credit is the capital value paid to the orignal lender of a loan that has been purchased the secondary market.
+        # TODO: Combine Principal debit (old) with Principal debit (new). Only difference in regexp will be optional '£' (\x{00A3}) in the transaction description
+        'Principal credit (new)' => {          # 'LPID: Principal credit (new)'
+            searchString => 'Loan_Part_ID [0-9]+:Principal \x{00A3}([0-9]+\.[0-9]{2}):.*,\g{1},\Z',
+            column => 2,
+            index => 18,
+            visible => 1,
+            derivedGroup => 0,
+        },
+        # Interest credit is the partial month's interest paid to the orignal lender of a loan that has been purchased the secondary market.
+        # Value in the transaction description should be a positive number
+        'Interest credit (new)' => {           # 'LPID: Interest credit (new)'
+            searchString => 'Loan_Part_ID [0-9]+.+:Interest \x{00A3}-([0-9]+\.[0-9]{2}):.*,\g{1},[0-9]+\.[0-9]{2}\Z',
+            column => 2,
+            index => 19,
+            visible => 1,
+            derivedGroup => 1,
+        },
+        # Transfer fee debit is the is the 1.25% fee paid by the seller of a loan on the secondary market to the purchaser.
+        'Transfer fee debit' => {                # 'LPID: Transfer fee debit'
+            searchString => 'Loan_Part_ID [0-9]+.+:Transfer_Payment \x{00A3}([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',   # TODO: Untested
+            column => 3,
+            index => 20,
+            visible => 1,
+            derivedGroup => 2,
+        },
         # Net interest is calculated in the same way as "INTEREST" on the Funding Circle website's Summary page:
-        # Net interest = Interest repayment + Early interest repayment + Interest credit - Interest debit
+        # Net interest = Interest repayment + Early interest repayment + Interest credit (old) + Interest credit (new) - Interest debit (old) -Interest debit (new)
         # N.B: This is solely a derived figure and a 'Net interest' transaction category will never appear in a statement
         'Net interest (derived)' => {
             searchString => 'XXX-Net-interest-XXX',     # As this is a derived category, its regexp should NEVER match a transaction category when parsing a statement!
             column => 2,
-            index => 19,
+            index => 21,
             visible => 1,
+            derivedGroup => -1,
+        },
+        # Net transfer fee is calculated in the same way as "NET TRANSFER FEE" on the Funding Circle website's Summary page:
+        'Net transfer fee (derived)' => {
+            searchString => 'XXX-Net-transfer-fee-XXX',     # As this is a derived category, its regexp should NEVER match a transaction category when parsing a statement!
+            column => 2,
+            index => 22,
+            visible => 1,
+            derivedGroup => -2,
         },
     );
     # print(Dumper(\%transactionCategories));
@@ -197,6 +244,8 @@ sub createStatementDataStructure {
         numTransactions => 0,               # The number of transactions of this category parsed from the statement
         column => undef,                    # The column of the transaction category, filled from %transactionCategories
         index => undef,                     # The position in which to list the transaction category in the human readable results
+        visible => undef,                   # Whether or not to show this category in the results tables
+        derivedGroup => undef,              # The psotive numeric value of the associated derived category group this transaction category is associated with 
     );
     # print(Dumper(\%transactionDetailHash));
 
@@ -225,6 +274,7 @@ sub createStatementDataStructure {
         $tempHash{column} = %{$value}{column};
         $tempHash{index} = %{$value}{index};
         $tempHash{visible} = %{$value}{visible};
+        $tempHash{derivedGroup} = %{$value}{derivedGroup};
         push(@transactionDetailsArray, \%tempHash); 
     }
     # print(Dumper(\@transactionDetailsArray));
@@ -334,7 +384,7 @@ sub parseFile {
                     #
                     # Conversely, if the Transfer Payment is positive (speculation based on the above ) then it is a loan sale and two things must change:
                     # Transfer Payment must be copied to the debit column, and
-                    # Interest must be copied to the credit colum with its (SPECULATIVE) negative sign removed.
+                    # Interest must be copied to the credit column with its (SPECULATIVE) negative sign removed.
                     # Currently AFAIK a net of these two figures will be displayed in the debit column, and nothing in the credit column (NB: Speculation - I have no transactions to check against)
                     #
                     # Also note: This type of transaction also prevents the most efficient use of 'last' in the transaction category matching and summing code
@@ -429,25 +479,26 @@ sub parseFile {
 
     # Calculate the derived 'Net Interest' category
     # TODO: Update this calc for the new secondary market loan sale/purchase transactions
-    # TODO: Change to matching a boolean 'interest variable' instead of displayName and adding/subtracting based on column? 
-    my $netInterest = 0.00;
-    my $netInterestNumTransactions = 0;
+
+    my @netValue;
+    my @netNumTransactions;
     foreach( @{$statementData->{TRANSACTIONDETAILSARRAY}} ) {
-        if( $_->{displayName} =~ /Interest repayment/ || 
-            $_->{displayName} =~ /Early interest repayment/ ||
-            $_->{displayName} =~ /Interest credit/ ) {
-            $netInterest += $_->{sumTotal};
-            $netInterestNumTransactions += $_->{numTransactions};
-        }
-        elsif ($_->{displayName} =~ /Interest debit/) {
-            $netInterest -= $_->{sumTotal};
-            $netInterestNumTransactions += $_->{numTransactions};
+        if($_->{derivedGroup} > 0) {
+            if($_->{column} == 2) { # credit transactions
+                $netValue[$_->{derivedGroup}] += $_->{sumTotal};
+            }
+            elsif($_->{column} == 3) { # debit transactions
+                $netValue[$_->{derivedGroup}] -= $_->{sumTotal};
+            }
+            $netNumTransactions[$_->{derivedGroup}] += $_->{numTransactions};
         }
     }
     foreach( @{$statementData->{TRANSACTIONDETAILSARRAY}} ) {
-        if ($_->{displayName} =~ /Net interest/) {
-            $_->{sumTotal} = $netInterest;
-            $_->{numTransactions} = $netInterestNumTransactions;
+        if($_->{derivedGroup} < 0) {
+            my $posInt = $_->{derivedGroup};
+            $posInt =~ s/-//g;
+            $_->{sumTotal} = $netValue[$posInt];
+            $_->{numTransactions} = $netNumTransactions[$posInt];
         }
     }
 
@@ -573,7 +624,6 @@ if(@ARGV) {
         my $tempResults = parseFile($currentFile);
         push(@statementResults, \$tempResults);
     }
-    
 
     # Calculate grand totals for each transaction category by summing from all statements parsed
     if(@statementResults > 1) {
@@ -595,12 +645,15 @@ if(@ARGV) {
             # Sum each transaction category sumTotal and numTransactions, this is more awkward than is should be...
             foreach my $res ( @{$result->{TRANSACTIONDETAILSARRAY}} ) {
                 foreach my $tot (@{$totals->{TRANSACTIONDETAILSARRAY}}) {
-                    if("$res->{displayName}" =~ "$tot->{displayName}") {
-                        # print("Matched results displayName: " . $res->{displayName} . " with totals displayName: " . $tot->{displayName} . "\n");
+                    my $resDisplayName = $res->{displayName};
+                    my $totDisplayName = $tot->{displayName};
+                    # can't have regexp special characters in the displayName comparison strings
+                    $resDisplayName =~ s/[\(\)]//g;
+                    $totDisplayName =~ s/[\(\)]//g;
+                    if($resDisplayName =~ m/$totDisplayName/) {
                         $tot->{sumTotal} += $res->{sumTotal};
                         $tot->{numTransactions} += $res->{numTransactions};
                     }
-                    # print(Dumper($tot));
                 }
             }
         }
