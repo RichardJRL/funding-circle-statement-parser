@@ -51,52 +51,59 @@ sub createStatementDataStructure {
             visible => 1,
             derivedGroup => 1,
         },
+        'Interest recovery repayment' => {
+            searchString => "Interest recovery repayment",
+            column => 2,
+            index => 2,
+            visible => 1,
+            derivedGroup => 1,
+        },
         'Principal repayment' => {
             searchString => "Principal repayment",
             column => 2,
-            index => 2,
+            index => 3,
             visible => 1,
             derivedGroup => 0,
         },
         'Early principal repayment' => {
             searchString => "Early principal repayment",
             column => 2,
-            index => 3,
+            index => 4,
             visible => 1,
             derivedGroup => 0,
         },
         'Principal recovery repayment' => {
             searchString => "Principal recovery repayment",
             column => 2,
-            index => 4,
+            index => 5,
             visible => 1,
             derivedGroup => 0,
         },
         'New loans made' => {
             searchString => "Loan offer",
             column => 3,
-            index => 5,
+            index => 6,
             visible => 1,
             derivedGroup => 0,
         },
         'Fees' => {
             searchString => "Servicing fee",
             column => 3,
-            index => 6,
+            index => 7,
             visible => 1,
             derivedGroup => 0,
         },
         'Deposits' => {
             searchString => "TRANSFERIN|$claName",
             column => 2,
-            index => 7,
+            index => 8,
             visible => 1,
             derivedGroup => 0,
         },
         'Withdrawals' => {
             searchString => "Withdrawal",
             column => 3,
-            index => 8,
+            index => 9,
             visible => 1,
             derivedGroup => 0,
         },
@@ -117,7 +124,7 @@ sub createStatementDataStructure {
         'Principal credit (old)' => {
             searchString => 'Loan_Part_ID [0-9]+:Principal ([0-9]+\.[0-9]{2}):.*,\g{1},\Z',
             column => 2,
-            index => 9,
+            index => 10,
             visible => 1,
             derivedGroup => 0,
         },
@@ -125,7 +132,7 @@ sub createStatementDataStructure {
         'Interest credit (old)' => {
             searchString => 'Loan_Part_ID [0-9]+.+:Interest ([0-9]+\.[0-9]{2}):.*,\g{1},\Z',
             column => 2,
-            index => 10,
+            index => 11,
             visible => 1,
             derivedGroup => 1,
         },
@@ -133,7 +140,7 @@ sub createStatementDataStructure {
         'Principal debit (old)' => {
             searchString => 'Loan_Part_ID [0-9]+:Principal ([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',
             column => 3,
-            index => 11,
+            index => 12,
             visible => 1,
             derivedGroup => 0,
         },
@@ -141,7 +148,7 @@ sub createStatementDataStructure {
         'Interest debit (old)' => {
             searchString => 'Loan_Part_ID [0-9]+.+:Interest ([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',
             column => 3,
-            index => 12,
+            index => 13,
             visible => 1,
             derivedGroup => 1,
         },
@@ -150,7 +157,7 @@ sub createStatementDataStructure {
         'Historical delta (old)' => {
             searchString => 'Loan_Part_ID [0-9]+.+:Delta ([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',
             column => 3,
-            index => 13,
+            index => 14,
             visible => 0,
             derivedGroup => 0,
         },
@@ -159,7 +166,7 @@ sub createStatementDataStructure {
         'Historical fees (old)' => {
             searchString => 'Loan_Part_ID [0-9]+.+:Fee ([0-9]+\.[0-9]{2}),[0-9]+\.[0-9]{2},\g{1}\Z',
             column => 3,
-            index => 14,
+            index => 15,
             visible => 0,
             derivedGroup => 0,
         },
@@ -167,7 +174,7 @@ sub createStatementDataStructure {
         'Principal credit (new)' => {
             searchString => 'Loan_Part_ID [0-9]+:Principal \x{00A3}([0-9]+\.[0-9]{2}):.*,\g{1},\Z',
             column => 2,
-            index => 15,
+            index => 16,
             visible => 1,
             derivedGroup => 0,
         },
@@ -176,7 +183,7 @@ sub createStatementDataStructure {
         'Interest credit (new)' => {
             searchString => 'Loan_Part_ID [0-9]+.+:Interest \x{00A3}-([0-9]+\.[0-9]{2}):.*,\g{1},[0-9]+\.[0-9]{2}\Z',
             column => 2,
-            index => 16,
+            index => 17,
             visible => 1,
             derivedGroup => 1,
         },
@@ -184,7 +191,7 @@ sub createStatementDataStructure {
         'Transfer fee debit' => {
             searchString => 'Loan_Part_ID [0-9]+.+:Transfer_Payment \x{00A3}([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',   # TODO: Untested
             column => 3,
-            index => 17,
+            index => 18,
             visible => 1,
             derivedGroup => 2,
         },
@@ -193,7 +200,7 @@ sub createStatementDataStructure {
         'Principal debit (new)' => {
             searchString => 'Loan_Part_ID [0-9]+:Principal \x{00A3}([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',
             column => 3,
-            index => 18,
+            index => 19,
             visible => 1,
             derivedGroup => 0,
         },
@@ -202,7 +209,7 @@ sub createStatementDataStructure {
         'Interest debit (new)' => {
             searchString => 'Loan_Part_ID [0-9]+.+:Interest \x{00A3}([0-9]+\.[0-9]{2}):.*,[0-9]+\.[0-9]{2},\g{1}\Z',
             column => 3,
-            index => 19,
+            index => 20,
             visible => 1,
             derivedGroup => 1,
         },
@@ -211,7 +218,7 @@ sub createStatementDataStructure {
         'Transfer fee credit' => {
             searchString => 'Loan_Part_ID [0-9]+.+:Transfer_Payment \x{00A3}-([0-9]+\.[0-9]{2}):.*,\g{1},[0-9]+\.[0-9]{2}\Z',
             column => 2,
-            index => 20,
+            index => 21,
             visible => 1,
             derivedGroup => 2,
         },
@@ -221,7 +228,7 @@ sub createStatementDataStructure {
         'Net interest (derived)' => {
             searchString => 'XXX-Net-interest-XXX',     # As this is a derived category, its regexp should NEVER match a transaction category when parsing a statement!
             column => 2,
-            index => 21,
+            index => 22,
             visible => 1,
             derivedGroup => -1,
         },
@@ -230,7 +237,7 @@ sub createStatementDataStructure {
         'Net transfer fee (derived)' => {
             searchString => 'XXX-Net-transfer-fee-XXX',     # As this is a derived category, its regexp should NEVER match a transaction category when parsing a statement!
             column => 2,
-            index => 22,
+            index => 23,
             visible => 1,
             derivedGroup => -2,
         },
